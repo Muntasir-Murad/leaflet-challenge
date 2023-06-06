@@ -18,7 +18,7 @@ d3.json(queryurl).then(function (data) {
         return {
             opacity: 1,
             fillOpacity: 1,
-            fillColor: mapColor(feature.geometry.coordinates[2]),
+            fillColor: getColor(feature.geometry.coordinates[2]),
             color: "black",
             radius: mapRadius(feature.properties.mag),
             stroke: true,
@@ -27,7 +27,7 @@ d3.json(queryurl).then(function (data) {
 
         // creating colors
     }
-    function mapColor(depth) {
+    function getColor(depth) {
         switch (true) {
             case depth > 90:
                 return "red";
@@ -69,21 +69,20 @@ d3.json(queryurl).then(function (data) {
     }).addTo(myMap);
 
 // Add the legend with colors to corrolate with depth
-var legend = L.control({ position: "bottomright" });
+let legend = L.control({ position: "bottomright" });
 legend.onAdd = function() {
-  var div = L.DomUtil.create("div", "info legend"),
+   div = L.DomUtil.create("div", "info legend"),
     depth = [-10, 10, 30, 50, 70, 90];
+    labels = [];
+    legendHead = "<h3 style='text-align: center'>Earthquake Depth</h3>"
+    div.innerHTML = legendHead
 
-  for (var i = 0; i < depth.length; i++) {
-    div.innerHTML +=
-      '<div><i style="background:' +
-      mapColor(depth[i] + 1) +
-      '"></i> ' +
-      depth[i] +
-      (depth[i + 1] ? "&ndash;" + depth[i + 1] + '<br>' : "+") +
-      "</div>";
-  }
-  return div;
+    for (let i = 0; i < depth.length; i++) {
+        labels.push('<ul style="background-color:' + getColor(depth[i] + 1) + '"> <span>' + depth[i] +
+        (depth[i + 1] ? '&ndash;' + depth[i + 1] + '' : '+') + '</span></ul>');
+      }
+        div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+      return div;
 };
 legend.addTo(myMap);
 });
